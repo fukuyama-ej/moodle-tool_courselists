@@ -90,14 +90,13 @@ if ($exportCategoryCsv === true) {
 
     $sql = <<<___SQL___
 SELECT CC.* FROM {course_categories} CC
-  ORDER BY CC.id ASC
+  ORDER BY CC.sortorder ASC
 ___SQL___;
 
     $rows = $DB->get_records_sql($sql);
 
     $fields = array('id'            => 'id',
-                    'category'      => 'category',
-                    'category_path' => 'category_path',
+                    'name'          => 'name',
                     'description'   => 'description',
                     'idnumber'      => 'idnumber',
                     'theme'         => 'theme',
@@ -106,23 +105,21 @@ ___SQL___;
     );
     if ($bulkcompat) {
         unset($fields['id']);
-        unset($fields['category']);
         unset($fields['coursecount']);
     }
 
     $csvexport = new csv_export_writer();
     $csvexport->set_filename('course_categories'); // FIXME?
     $csvexport->add_data($fields);
+
+    $data = array();
     foreach ($rows as $key => $row) {
+	$tmps = array();
         foreach ($fields as $key => $field) {
-            // FIXME...
-            if (!strcmp('category', $key)) {
-                $data['category'] = $row->name;
-                continue;
-            }
-            if (!strcmp('category_path', $key)) {
+            if (!strcmp('name', $key)) {
                 $categories = array();
                 $categoryId = $row->id;
+
                 // fetch recursive category list
                 do {
                     $record = $DB->get_record('course_categories', array('id' =>  $categoryId));
@@ -134,14 +131,22 @@ ___SQL___;
                     $categories = array_reverse($categories);
                     $value = implode(' / ', $categories);
                 }
-                $data[$key] = $value; unset($value);
-                continue;
+#var_dump($value);
+            } elseif (!strcmp('description', $key)) {
+                if (!$value = $row->$field) {
+                    $value = ' ';
+                }
+            } else {
+                $value = $row->$field;
             }
+            $tmps[] = $value;
 
-
-            $data[$key] = $row->$field;
         }
-        $csvexport->add_data($data);
+        $data[] = $tmps;
+    }
+    #usort($data, create_function('$a,$b','if ($a[0] == $b[0]) {return 0;} return ($a[0] < $b[0]) ? -1 : 1;'));
+    foreach ($data as $row) {
+        $csvexport->add_data($row);
     }
     $csvexport->download_file();
     die;
