@@ -1,6 +1,7 @@
 <?php
 
 require('../../../config.php');
+require('../../../version.php'); // FIXME??
 require_once($CFG->libdir.'/adminlib.php');
 require_once($CFG->libdir.'/csvlib.class.php');
 #require_once($CFG->dirroot.'/course/lib.php');
@@ -52,6 +53,14 @@ ___SQL___;
     );
     if ($bulkcompat) {
         unset($fields['id']);
+        unset($fields['legacyfiles']);
+    }
+
+    if (preg_match('/^[0-9]+\.[0-9]+/', $release, $matches)) {
+       if ($matches[0] <= 2.5) {
+           unset($fields['category_path']);
+           $fields['category'] = 'category';
+       }
     }
 
     $csvexport = new csv_export_writer();
@@ -59,7 +68,13 @@ ___SQL___;
     $csvexport->add_data($fields);
     foreach ($rows as $key => $row) {
         foreach ($fields as $field) {
-            if (!strcmp('category_path', $field)) {
+            if (!strcmp('summary', $field)) {
+                if (!$row->$field) {
+                   $row->$field = '{summary}'; // FIXME!!
+                }
+            }
+            if (!strcmp('category_path', $field) || !strcmp('category', $field)) {
+
                 // fetch recursive category list
                 $categories = array();
                 $categoryId = $row->category;
