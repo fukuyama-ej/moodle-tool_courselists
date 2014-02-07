@@ -13,10 +13,6 @@ raise_memory_limit(MEMORY_HUGE);
 
 require_login();
 admin_externalpage_setup('tooladmincourselist');
-$context = get_system_context();
-require_capability('moodle/category:manage', $context);
-
-
 
 $bulkcompat        = optional_param('bulkcompat', '', PARAM_INT);
 $exportyCsv        = isset($_POST['exportcsv'])         ? true : false;
