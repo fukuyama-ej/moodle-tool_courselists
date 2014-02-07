@@ -98,7 +98,6 @@ ___SQL___;
     $csvexport->download_file();
     die;
 }
-
 if ($exportCategoryCsv === true) {
     // Export all categories as CSV
 #    $rows = $DB->get_records('course_categories');
@@ -129,35 +128,35 @@ ___SQL___;
 
     $data = array();
     foreach ($rows as $key => $row) {
-	$tmps = array();
-        foreach ($fields as $key => $field) {
-            if (!strcmp('name', $key)) {
-                $categories = array();
-                $categoryId = $row->id;
+    $tmps = array();
+    foreach ($fields as $key => $field) {
+        if (!strcmp('name', $key)) {
+            $categories = array();
+            $categoryId = $row->id;
 
-                // fetch recursive category list
-                do {
-                    $record = $DB->get_record('course_categories', array('id' =>  $categoryId));
-                    $categoryId = $record->parent;
-                    $categories[] = $record->name;
-                } while ($categoryId);
+            // fetch recursive category list
+            do {
+                $record = $DB->get_record('course_categories', array('id' =>  $categoryId));
+                $categoryId = $record->parent;
+                $categories[] = $record->name;
+            } while ($categoryId);
 
-                if ($categories && is_array($categories)) {
-                    $categories = array_reverse($categories);
-                    $value = implode(' / ', $categories);
-                }
-#var_dump($value);
-            } elseif (!strcmp('description', $key)) {
-                if (!$value = $row->$field) {
-                    $value = ' ';
-                }
-            } else {
-                $value = $row->$field;
+            if ($categories && is_array($categories)) {
+                $categories = array_reverse($categories);
+                $value = implode(' / ', $categories);
             }
-            $tmps[] = $value;
-
+#var_dump($value);
+        } elseif (!strcmp('description', $key)) {
+            if (!$value = $row->$field) {
+                $value = ' ';
+            }
+        } else {
+            $value = $row->$field;
         }
-        $data[] = $tmps;
+        $tmps[] = $value;
+
+    }
+    $data[] = $tmps;
     }
     #usort($data, create_function('$a,$b','if ($a[0] == $b[0]) {return 0;} return ($a[0] < $b[0]) ? -1 : 1;'));
     foreach ($data as $row) {
@@ -166,6 +165,7 @@ ___SQL___;
     $csvexport->download_file();
     die;
 }
+
 
 
 $frontpagecontext = context_course::instance(SITEID);
