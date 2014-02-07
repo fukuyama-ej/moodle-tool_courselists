@@ -68,7 +68,7 @@ ___SQL___;
     $csvexport->add_data($fields);
     foreach ($rows as $key => $row) {
         foreach ($fields as $field) {
-            if (!strcmp('summary', $field)) {
+            if (!strcmp('summary', $field) && $bulkcompat) {
                 if (!$row->$field) {
                    $row->$field = '{summary}'; // FIXME!!
                 }
