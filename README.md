@@ -32,6 +32,9 @@ $ cd {$moodlewww}/admin/tool
 $ git clone https://github.com/fukuyama-ej/moodle-tool_courselists.git courelists
 ```
 
+ログインし直すか、サイト管理→通知 にてアドオンを登録します。
+
+
 Usage
 -------
 
