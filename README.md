@@ -29,7 +29,7 @@ Install
 もしくは、gitコマンドでcloneします。
 ```
 $ cd {$moodlewww}/admin/tool
-$ git clone https://github.com/fukuyama-ej/moodle-tool_courselists.git courelists
+$ git clone https://github.com/fukuyama-ej/moodle-tool_courselists.git courselists
 ```
 
 ログインし直すか、サイト管理→通知 にてアドオンを登録します。
